@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            padding: 2rem;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        #display {
+            font-size: 4rem;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        button {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        #startStop {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        #startStop:hover {
+            background-color: #45a049;
+        }
+        
+        #reset {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        #reset:hover {
+            background-color: #e53935;
+        }
+        
+        #lap {
+            background-color: #2196f3;
+            color: white;
+        }
+        
+        #lap:hover {
+            background-color: #1e88e5;
+        }
+        
+        #laps {
+            width: 100%;
+            max-width: 400px;
+            list-style-type: none;
+            padding: 0;
+            margin: 0 auto;
+            border-top: 1px solid #444;
+        }
+        
+        #laps li {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #333;
+            background-color: rgba(255, 255, 255, 0.05);
+            font-size: 1.1rem;
+        }
+        
+        #laps li:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Stopwatch</h1>
+    <div id="display">00:00:00</div>
+
+    <div class="buttons">
+        <button id="startStop">Start</button>
+        <button id="lap">Lap</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <ul id="laps"></ul>
+
+    <script>
+        let timer;
+        let isRunning = false;
+        let seconds = 0,
+            minutes = 0,
+            hours = 0;
+
+        const display = document.getElementById("display");
+        const startStopBtn = document.getElementById("startStop");
+        const resetBtn = document.getElementById("reset");
+        const lapBtn = document.getElementById("lap");
+        const laps = document.getElementById("laps");
+
+        function updateDisplay() {
+            let h = hours < 10 ? "0" + hours : hours;
+            let m = minutes < 10 ? "0" + minutes : minutes;
+            let s = seconds < 10 ? "0" + seconds : seconds;
+            display.innerText = `${h}:${m}:${s}`;
+        }
+
+        function startStop() {
+            if (!isRunning) {
+                timer = setInterval(() => {
+                    seconds++;
+                    if (seconds === 60) {
+                        seconds = 0;
+                        minutes++;
+                        if (minutes === 60) {
+                            minutes = 0;
+                            hours++;
+                        }
+                    }
+                    updateDisplay();
+                }, 1000);
+                startStopBtn.innerText = "Pause";
+                isRunning = true;
+            } else {
+                clearInterval(timer);
+                startStopBtn.innerText = "Start";
+                isRunning = false;
+            }
+        }
+
+        function reset() {
+            clearInterval(timer);
+            seconds = 0;
+            minutes = 0;
+            hours = 0;
+            isRunning = false;
+            updateDisplay();
+            startStopBtn.innerText = "Start";
+            laps.innerHTML = "";
+        }
+
+        function lap() {
+            if (isRunning) {
+                let h = hours < 10 ? "0" + hours : hours;
+                let m = minutes < 10 ? "0" + minutes : minutes;
+                let s = seconds < 10 ? "0" + seconds : seconds;
+                const li = document.createElement("li");
+                li.innerText = `Lap ${laps.children.length + 1}: ${h}:${m}:${s}`;
+                laps.appendChild(li);
+            }
+        }
+
+        startStopBtn.addEventListener("click", startStop);
+        resetBtn.addEventListener("click", reset);
+        lapBtn.addEventListener("click", lap);
+
+        updateDisplay(); // Initialize display
+    </script>
+</body>
+
+</html>
